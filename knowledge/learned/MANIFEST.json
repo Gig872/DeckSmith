@@ -1,0 +1,107 @@
+{
+  "note": "learned=agent 工作成果（可写）。type=example 已复跑核验通过；type=template 为参数化模板(含{{占位}}，不直接运行)。",
+  "items": [
+    {
+      "name": "boiling_channel_quality_distribution.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "78cde34d668975ce3a584c485dff98f7a4ade5322b0515ac6d4fbcd44b9782a2"
+    },
+    {
+      "name": "branch_min_splitter.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "046468962e4d62097e650290e999d72ed343898c0f4897e396198bbd7ee77061"
+    },
+    {
+      "name": "chf_dryout_onset_1p12MW.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "67356093a342d3f9b161ffc3102733dd470747d6aa9e35641770aae4b2cf66aa"
+    },
+    {
+      "name": "chf_dryout_power_scan_template.i",
+      "type": "template",
+      "verified": false,
+      "sha256": "9f854eea8bd9106f5a43e589fde295720c49ff2e8c72985a1e7bc999350ac171"
+    },
+    {
+      "name": "choked_flow_backpressure_scan_template.i",
+      "type": "template",
+      "verified": false,
+      "sha256": "de2adec622961a75b45363d13d3655c632f2990fa4f87c47f985006344353d08"
+    },
+    {
+      "name": "choked_flow_two_phase_critical.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "497e597c3e88a3f6091a335c4de2cec2131828078be4ee63369588b283cd8e38"
+    },
+    {
+      "name": "horiz_pipe_area0.05_L1m_4vol.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "a854e38c0a84fd17921a59f2e5256e743bd466678cff83eb485c19565bb69349"
+    },
+    {
+      "name": "horiz_pipe_flow_in_press_out.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "847d513b337a596345a731c9ef9d4e5f82cceade31949bb7f27d283267ddf104"
+    },
+    {
+      "name": "loca_sbloca_blowdown.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "0c57075f3bd6983607162f3d6450924504a014a6543189cad8160db7056cd735"
+    },
+    {
+      "name": "lof_transient_pump_coastdown.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "19228c608e2186efe68e47be43149cf8190055ebeec769997bf1a82e8c4871e5"
+    },
+    {
+      "name": "parallel_two_channel_split_merge.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "b997c5abb0ca9027777341a49c89131245259a29e9651dec60cec1f524f3c573"
+    },
+    {
+      "name": "pipe_flow_scan_heated_100kW_1MPa.i",
+      "type": "template",
+      "verified": false,
+      "sha256": "f85a63e31efc94503bd5ba4935b33077494c2d45fdf093e0fb64e8931ff15e61"
+    },
+    {
+      "name": "pipe_flow_scan_heated_200kW.i",
+      "type": "template",
+      "verified": false,
+      "sha256": "c2d3c9e3d3c93659f03e96326ca36e50d37cd82c460529a7f6e19d094bc846e1"
+    },
+    {
+      "name": "pwr_two_loop_coupled_sg.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "27592c96570b4e3ff42133aaa78d109256131e64db136ea6c193e4a20bd7b54b"
+    },
+    {
+      "name": "sbloca_pumptrip_lof_loca_combined.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "605f19ffea3c35c90fd0d5aaa10d4c56dac5698029c8ebc5e5739d48821b1bf1"
+    },
+    {
+      "name": "single_channel_heating_100kW.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "146a2c39d105fb62016c824c70e469bf5f0ee1ac1dcd9e46d0903b2dfb7455ed"
+    },
+    {
+      "name": "snglvol_min_deadend.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "b472d5ac285815f9fb9b474c0b76b5e67d4836cf45c1adb9614a98712c407b00"
+    }
+  ]
+}

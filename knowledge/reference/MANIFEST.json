@@ -1,0 +1,186 @@
+{
+  "note": "参考库分档：human=人工基座(最高权重,只读)；agent=agent生成内容的可信基座(已核验,冻结)；learned=agent工作成果(可写,见 knowledge/learned)。",
+  "authority_order": [
+    "human",
+    "agent",
+    "learned"
+  ],
+  "archived_at": "2026-09-10 19:44:42",
+  "tiers": {
+    "human": [
+      {
+        "name": "series_pipe.i",
+        "sha256": "a098aea92a0572d8ec5f100323ee8f66f7050b93a373a917d82112b44a7b317d",
+        "verified": true
+      },
+      {
+        "name": "simple_pipe.i",
+        "sha256": "bcb269ed29fb0db784692046f63b4daa7e7192ec273573e1693d4b97d06fa772",
+        "verified": true
+      },
+      {
+        "name": "vert_pipe.i",
+        "sha256": "7d62f596f8fc83d779994c651b72eebd3f7d6477daad9f6448da66f52b8f9df6",
+        "verified": true
+      }
+    ],
+    "agent": [
+      {
+        "name": "ref_large_loop_transient.i",
+        "sha256": "66ecec9ece10fd67a543ee866cc7fa7707934d7ec0494c03fb23736c70d3b97c",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_medium_parallel_two_channel.i",
+        "sha256": "1d3f6d4a605743a5a55df1ef8e17223e387cad97023cadd48c01a3dd68588f43",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_medium_pipe_heatstructure.i",
+        "sha256": "13fe318cfb159a71c48ee503aac24c84d4a499657b0d4077d5e6abdbd97e405f",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_medium_pump_loop.i",
+        "sha256": "7afd8a5dda35072a6cb3725d5b82fd9b25dee289233c093d98c59fe4ca59b666",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_medium_series_pipe.i",
+        "sha256": "c9607ff43bb87d14741ab8fd05155b882f8fe6e7827d256f6d4c4a88afcc24dd",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_medium_valve_trip_transient.i",
+        "sha256": "102e07f7464b7d023931be4ad34eaddc060750030ca525248cb072359fa9b2fc",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_annulus_vertical.i",
+        "sha256": "0eddc1e457a188b032f32474ba7c5f9f5af0928df433a7eeb559058faa9df621",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_branch_splitter.i",
+        "sha256": "2c0c7cd45384029431ee1b1ee24b2760f3bf80b5ca73ffc7627f9223637846ac",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_eccmix.i",
+        "sha256": "ba888b7ebe97abad5bdd917166c4c9d223d2e4e1e1792c074a8a1276dcf9e51a",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_jetmixer.i",
+        "sha256": "308e387108f1a4c41a5e9d82e0608fd95f34732097ecc8786fb4a708e7fa9a25",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_pipe_4vol.i",
+        "sha256": "3609d1d30a61c542e2aa12e8929194b0086e146df7b797e08b967737088f54f1",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_separatr.i",
+        "sha256": "7a207d75e078afaa0165c7929e89c5952dc090e12839f3bc1deb80078256cd43",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_sngljun.i",
+        "sha256": "c9521a766eac7a80cdfe92c6f4bdd68c64b29654f8d4daafdc112fe69634b22d",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_snglvol_deadend.i",
+        "sha256": "34da43032edde163e71c28bbbd51331548eff044315172d63bcb3b4c0138953a",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_tmdpvol_tmdpjun.i",
+        "sha256": "ca0c7533fe3b266dedbc0dd93a6c52620cdef57126ef178c5ec04250694a053c",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_valve_check.i",
+        "sha256": "9863323bcd946b746b8a6bb27de0be1617dd39b32d3ae211f631de8958d7f2eb",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_valve_inrvlv.i",
+        "sha256": "d9adc1ac8d30f2d493dc7d9763b59efec4b73600bfdb74dcf84efbffef285209",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_valve_rlfvlv.i",
+        "sha256": "bd771869a4ba1e6e07c7f809addb9427d9dc8da8560016c5fc0e74533c23cf86",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_valve_srvvlv.i",
+        "sha256": "f36a40a6422ffe7067e8da2e530e3b07aaeefb2252fcc0e1a1abce2be466935e",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_small_valve_trpvlv.i",
+        "sha256": "04d3af5a8a413aff7cef455bb82cc3c477d5625d9d7b7130c2a0c64dee16dfe9",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_x_accum.i",
+        "sha256": "d21e607ffcbbd87ac11a42ed61aa2019579d946188f079f41683cb6e55a954ed",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_x_hs_gap.i",
+        "sha256": "70fce196356e9fa29920dc944aedfa59f9b9d14af108fd135ccc396e37cfae5b",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_x_mtpljun.i",
+        "sha256": "347d9ef301fa542d69fb77739aa7e1149c3f3e343ec98f48ececea01f43f2612",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_x_point_kinetics.i",
+        "sha256": "bcd02d77a6532c59f68b909821402aa92b961c2c69bb4a98edc141d0d153ef1d",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_x_pump_curves.i",
+        "sha256": "795b0ca9a1f91b7fa6a28f79ef1c43a8de461d192b0794b1afa8cb1713adf2a7",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      },
+      {
+        "name": "ref_x_turbine.i",
+        "sha256": "6ea109a0eecb0704c4d09352e325f377dc17d97e2196c517618cfd3348339412",
+        "verified": true,
+        "verify_note": "独立复跑：正常结束 + check_sanity 物理通过 + 质量误差≈0"
+      }
+    ]
+  }
+}

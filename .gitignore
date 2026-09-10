@@ -1,0 +1,26 @@
+# ===== 本地配置与密钥（绝不提交）=====
+config.json
+dist/config.json
+
+# ===== 运行产物 / 工作区 =====
+workspace/
+dist/
+build/
+*.spec
+*.log
+*_out.txt
+dev/*_out.txt
+
+# ===== Python 缓存 =====
+__pycache__/
+*.py[cod]
+
+# ===== 版权素材：技术手册请勿随仓库分发（用户自备）=====
+knowledge/relap5输入卡介绍.md
+knowledge/manual.md
+
+# ===== 图标原图（可选忽略）=====
+assets/icon_src.jpg
+
+# ===== Windows 快捷方式（含本机路径，不提交）=====
+*.lnk

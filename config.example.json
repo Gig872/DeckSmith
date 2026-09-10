@@ -1,0 +1,13 @@
+{
+  "_comment": "复制为 config.json 后填写。也可以完全不用本文件——首次运行会在 exe/源码目录自动生成 config.json。",
+  "base_url": "https://api.deepseek.com/v1",
+  "api_key": "在此填你自己的 API Key",
+  "model": "deepseek-chat",
+  "relap5_dir": "你的 RELAP5 安装目录（含 relap5.exe 与 tpf* 物性文件）",
+  "doc_path": "RELAP5 输入卡手册的 .md 路径（可选；用于手册检索）",
+  "system_extra": "（可选）全局提示词",
+  "font_size": 11,
+  "prices": {
+    "deepseek-chat": [2.0, 8.0, "CNY"]
+  }
+}
