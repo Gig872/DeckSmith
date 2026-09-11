@@ -6,7 +6,7 @@ REM 生成：dist\DeckSmith.exe
 setlocal
 cd /d "%~dp0"
 
-set MPL_OPTS=
+set MPL_OPTS=--exclude-module matplotlib --exclude-module numpy
 if /I "%~1"=="mpl" set MPL_OPTS=--collect-all matplotlib --collect-all numpy --hidden-import matplotlib.backends.backend_agg
 
 pyinstaller --noconfirm --onefile --windowed --name DeckSmith ^
