@@ -7,7 +7,7 @@ setlocal
 cd /d "%~dp0"
 
 set MPL_OPTS=--exclude-module matplotlib --exclude-module numpy
-if /I "%~1"=="mpl" set MPL_OPTS=--collect-all matplotlib --collect-all numpy --hidden-import matplotlib.backends.backend_agg
+if /I "%~1"=="mpl" set MPL_OPTS=--collect-data matplotlib --hidden-import matplotlib.backends.backend_agg --exclude-module torch --exclude-module torchvision --exclude-module torchaudio --exclude-module scipy --exclude-module pandas --exclude-module IPython
 
 pyinstaller --noconfirm --onefile --windowed --name DeckSmith ^
   --icon assets\icon.ico ^

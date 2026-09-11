@@ -7,7 +7,33 @@
 
 ## [未发布]
 
-- 规划中：**2.0.x 全稳 → v2.1.0（2.x 正式版）**。
+- 规划中：真机（真模型）端到端验收；`verify_result` 扩展（压降/流速量级、无关性半自动）。
+
+## [2.1.0] - 2026-09-11
+
+**2.x 正式版**：带后处理 + 自主评估。以下 2.0.x 开发里程碑（M1–M7）全部落地并稳定。
+
+### 内容（M1–M7 汇总）
+- **后处理**：`.o` 解析/抽数（`parse`/`extract`）· 清洗导出（`clean`）· 批量趋势（`scan`）·
+  曲线特征（`features`）· 水物性估算（`water`）· 绘图（`plot`）。
+- **结果图 / 批量扫描趋势图窗口**：零依赖 Canvas 折线，**变量与部件多选任意组合**、归一化、
+  变量中文名；可选 matplotlib 后端（`plotenv`：探库→自动安装→降级）+ PNG 导出。
+- **用图讲结果**（skill 60）：`plot_series` / `curve_features`，agent 出图自动弹窗、结论先行。
+- **自主评估**（skill 70）：`verify_result` 独立复核（饱和一致性 + 能量平衡），
+  结论分**通过/存疑/未覆盖**、**存疑必明说**；结果表顶部自动附评估。
+- 工具 47→83 项单测全绿；`docs/TEST_PLAN_2.0.md`（T0–T7 验收）。
+
+### 打包
+- 基础版：**11.8 MB**，纯标准库（`--exclude-module matplotlib numpy`）。
+- 带库版（`build_exe.bat mpl`）：**39.1 MB**，含 matplotlib 3.10 + Agg + `mpl-data`。
+- 两档均**冒烟通过**（启动不闪退、生成 `config.json`/`workspace/`、可正常关闭）；
+  并用同参数 console 探针**实测冻结后 matplotlib 可导入并出图**。
+- 修复：`--collect-all numpy` 会触发 `hook-torch` 拖入整包 PyTorch+CUDA（2.8GB）→ 改为
+  `--collect-data matplotlib` + 排除 torch/scipy/pandas/IPython（**保留 PIL**，matplotlib 导入依赖它）。
+
+### 已知限制
+- **真机（真模型）端到端**尚未验证（需真实 `.o` 与人工判断），留待后续。
+- `verify_result` 目前覆盖**饱和一致性 + 能量平衡**；**压降/流速量级、网格/时间步无关性**未自动化。
 
 ## [2.0.6] - 2026-09-11
 
