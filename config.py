@@ -28,7 +28,7 @@ def _res_or_base(rel: str) -> Path:
 class Settings:
     base_url: str = "https://api.deepseek.com/v1"
     api_key: str = ""
-    model: str = "deepseek-chat"
+    model: str = ""            # 留空：首次在『设置』里从接口 /models 查询后选择（避免写死错误的默认模型）
     temperature: float = 0.2
     max_tokens: int = 16000    # 单次输出上限：给"读手册+理解+构建"留足空间
     thinking: bool = False     # 思考模式：开启模型的思维链（更慢更贵；仅对支持的模型生效）
@@ -45,6 +45,7 @@ class Settings:
     # 目录（打包兼容：skills/reference 走只读资源，workspace/learned 走可写数据目录）
     workspace: str = str(WORKSPACE)
     skills_dir: str = str(_res_or_base("skills"))
+    runs_keep: int = 50          # workspace/runs 只保留最近多少次运行（按组 .o/.r；0=不清理）
 
     # ---- RELAP5 领域 ----
     # 以下路径**不写死本机**：优先环境变量 → config.json → 多候选探测（见 detect_*）。

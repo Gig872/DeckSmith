@@ -8,7 +8,7 @@ import threading
 import time
 
 from core import Session
-from .constants import OPENERS
+from .constants import OPENERS, var_label
 from .events import fmt_event
 
 
@@ -37,6 +37,9 @@ class ChatMixin:
             self._set_status("运行中…")
             return
         if self._busy:
+            return
+        if not (self.var_model.get().strip() or self.s.model):
+            self._log("agent", "请先在『⚙ 设置』里选择/填写模型（可点『获取模型』从接口拉取）并保存，再开始。")
             return
         self.var_in.set("")
         self._log("你", text)
@@ -70,12 +73,28 @@ class ChatMixin:
         holder["ev"].wait()
         return holder["ans"] or "(未回答)"
 
+    def _maybe_auto_plot(self, name, args):
+        """agent 出图/读图 → 自动弹「结果图」窗口（视图菜单可关；同一 (o,var) 去重）。"""
+        if not self.var_auto_plot.get() or name not in ("plot_series", "curve_features"):
+            return
+        a = args if isinstance(args, dict) else {}
+        o, var = a.get("o_path"), a.get("var")
+        if not o or not var:
+            return
+        key = (str(o), str(var))
+        if key in self._auto_opened:
+            return
+        self._auto_opened.add(key)
+        self._open_plot_window_for(o, var)
+        self._log("agent", f"（已弹出结果图窗口：{var_label(var)}）")
+
     def _drain(self):
         try:
             while True:
                 kind, *rest = self.q.get_nowait()
                 if kind == "ev":
-                    line = fmt_event(rest[0], rest[1])
+                    ev_kind, data = rest
+                    line = fmt_event(ev_kind, data)
                     if line:
                         self._events.append(line)
                         if len(self._events) > 3000:
@@ -83,6 +102,9 @@ class ChatMixin:
                         if self._think_txt and self._think_win and self._think_win.winfo_exists():
                             self._think_txt.insert("end", line + "\n")
                             self._think_txt.see("end")
+                    # agent 出图 → 自动弹「结果图」窗口（视图菜单可关）
+                    if ev_kind == "tool":
+                        self._maybe_auto_plot(data.get("name"), data.get("args"))
                 elif kind == "ask":
                     question, holder = rest
                     self._pending = holder
@@ -101,6 +123,10 @@ class ChatMixin:
                         self._log("agent", f"[终止] {out.stopped}")
                     if out.trace and self.var_trace.get():
                         self._log("agent", "[工具轨迹] " + " | ".join(t["tool"] for t in out.trace))
+                    # 兜底：若实时事件漏了出图，本轮结束仍把图弹出来
+                    for t in (out.trace or []):
+                        if t.get("tool") in ("plot_series", "curve_features"):
+                            self._maybe_auto_plot(t.get("tool"), t.get("args"))
                     if out.usage:
                         self.usage.add(out.usage, self.var_model.get() or self.s.model, self._prices())
                     self._refresh_usage()

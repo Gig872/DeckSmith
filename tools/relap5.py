@@ -50,6 +50,29 @@ def _read_o(p: Path) -> str:
     return p.read_bytes().decode("utf-8", "replace")
 
 
+def _prune_runs(outdir: Path, keep: int) -> None:
+    """只保留最近 keep 次运行（.o/.r 按主干成组），删更早的；keep<=0 表示不清理。"""
+    if keep <= 0:
+        return
+    try:
+        groups: dict[str, list[Path]] = {}
+        for p in outdir.iterdir():
+            if p.is_file():
+                groups.setdefault(p.stem, []).append(p)
+    except OSError:
+        return
+    if len(groups) <= keep:
+        return
+    ordered = sorted(groups.values(),
+                     key=lambda g: max(f.stat().st_mtime for f in g), reverse=True)
+    for g in ordered[keep:]:
+        for f in g:
+            try:
+                f.unlink()
+            except OSError:
+                pass
+
+
 @tool("validate_i", "对一段 RELAP5 输入卡做最小静态检查（终止卡/卡号/注释行/引号）。",
       {"text": {"type": "string"}}, ["text"])
 def validate_i(text: str) -> str:
@@ -129,6 +152,7 @@ def run_relap5(i_path: str, timeout: int = 180) -> str:
     ok = _normal_end(t)
     errs = _errors(t)
     rel = o.relative_to(_SB.root)
+    _prune_runs(outdir, int(getattr(load(), "runs_keep", 50) or 0))   # 保留最近 N 次，防无限增长
     msg = f"[relap5] rc={p.returncode} 正常结束={ok}  输出={rel}"
     if errs:
         msg += "\n错误：\n" + "\n".join(errs)

@@ -5,15 +5,61 @@ from __future__ import annotations
 import json
 import tkinter as tk
 from pathlib import Path
-from tkinter import filedialog, ttk
+from tkinter import filedialog, messagebox, ttk
 from tkinter.scrolledtext import ScrolledText
 
 import envcheck
+import plotenv
 import registry
 from config import CONFIG_FILE
 
 
 class MiscMixin:
+    # ================= 绘图后端（matplotlib 可选） =================
+    def _ensure_plot_backend(self) -> bool:
+        """探库 → 缺则征询后自动安装（带实时提示）→ 失败优雅降级。返回最终是否可用。"""
+        if plotenv.available():
+            return True
+        ok, why = plotenv.can_install()
+        if not ok:
+            messagebox.showinfo("绘图后端", why, parent=self.root)
+            return False
+        if not messagebox.askyesno(
+                "绘图增强",
+                "未检测到 matplotlib（绘图增强库，约 30–50MB，需联网 pip）。\n"
+                "是否现在自动安装，以获得更精细的 PNG 出图？\n\n"
+                "选『否』将用零依赖 Canvas 出图，功能不受影响。",
+                parent=self.root):
+            return False
+
+        win = tk.Toplevel(self.root)
+        win.title("安装 matplotlib（绘图增强）")
+        win.geometry("640x380")
+        bar = ttk.Frame(win)
+        bar.pack(fill="x", padx=8, pady=6)
+        lbl = ttk.Label(bar, text="正在安装，请稍候（首次约 30–60 秒）…")
+        lbl.pack(side="left")
+        txt = ScrolledText(win, wrap="word", font=("Consolas", 9))
+        txt.pack(fill="both", expand=True, padx=8, pady=(0, 8))
+
+        def prog(line: str):
+            txt.insert("end", line + "\n")
+            txt.see("end")
+            try:
+                win.update_idletasks()
+                win.update()
+            except tk.TclError:
+                pass
+
+        ok, msg = plotenv.install(prog)
+        lbl.configure(text=("完成" if ok else "失败") + "：" + msg)
+        txt.insert("end", "\n" + msg + "\n")
+        if ok:
+            win.after(1500, win.destroy)
+        else:
+            ttk.Button(bar, text="关闭", command=win.destroy).pack(side="right")
+        return ok
+
     # ================= 环境检测 =================
     def _env_check(self):
         win = tk.Toplevel(self.root)

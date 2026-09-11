@@ -31,12 +31,16 @@ class BaseMixin:
         self._pending = None
         self.var_trace = tk.BooleanVar(value=True)
         self.var_think_win = tk.BooleanVar(value=False)   # 视图：思考窗开关
+        self.var_auto_plot = tk.BooleanVar(value=True)    # 视图：agent 出图时自动开窗
         self.var_thinking = tk.BooleanVar(value=False)    # 模型：思考模式开关
         self._settings_open = False
         self._params_sig = None
         self._think_win = None          # 思考/工作窗口（Toplevel）
         self._think_txt = None
         self._events: list[str] = []    # 事件缓冲（窗口未开也留存）
+        self._plot_wins: list = []      # 结果图窗口（可多开）
+        self._scan_wins: list = []      # 批量扫描图窗口（可多开）
+        self._auto_opened: set = set()  # agent 自动出图去重：(o_path, var)
 
         registry.load_plugins("tools")
         ask.set_asker(self._asker)

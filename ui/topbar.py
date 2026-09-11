@@ -18,6 +18,10 @@ class TopbarMixin:
         mv.add_checkbutton(label="思考 / 工作窗口（实时）", variable=self.var_think_win,
                            command=self._toggle_think_win)
         mv.add_checkbutton(label="显示工具轨迹", variable=self.var_trace)
+        mv.add_checkbutton(label="agent 出图时自动开窗", variable=self.var_auto_plot)
+        mv.add_separator()
+        mv.add_command(label="结果图窗口…（实时出图）", command=self._open_plot_window)
+        mv.add_command(label="批量扫描趋势图…（参数→结果）", command=self._open_scan_window)
         mb["menu"] = mv
         mb.pack(side="left", padx=6)
 

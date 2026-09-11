@@ -7,7 +7,8 @@
 
 **先做合格的大语言模型助手，再做 RELAP5 建模 agent。**
 
-**版本：1.0（正式版）** ｜ **2.x 规划：带后处理**（`.o` 清洗与出图）。
+**版本：1.1（1.x 正式版）** ｜ **2.0.x 开发中：后处理 + 自主评估**（`.o` 解析 / 关键量提取 / 清洗导出 /
+结果图 / 批量扫描趋势图 / 独立复核），里程碑 M1–M7 即 v2.0.0…v2.0.6，正式版为 **v2.1.0**。
 
 ---
 
@@ -18,6 +19,10 @@
   读**文字说明**后自行构建卡片（而非抄模板）。
 - **三道物理体检**：`check_sanity`（质量守恒 + 压力/温度量级）、`result_summary`（末态读数 + 拓扑/节点守恒）、
   `transient_history`（瞬态时间历程）。
+- **自主评估（独立复核）**：`verify_result` 用**与仿真无关**的独立估算核对——饱和一致性
+  （两相是否在 `T_sat(p)`、单相液是否过热）、能量平衡（`ΔT ≈ Q/(ṁ·cp)`）；结论分
+  **通过 / 存疑 / 未覆盖**，**存疑必明说**，不靠"专家经验"。
+- **后处理与出图（2.0）**：`.o` 解析/抽数/清洗导出 + **结果图 / 批量扫描趋势图**（多选任意组合变量与部件）+ 读图解读。
 - **三档样例库（权威降序）**：`human`（人工种子，最高权重，只读）> `agent`（已核验、冻结）> `learned`（工作成果，可写）。
 - **参数化批量仿真**：先与人协商框架 → 询问参数范围 → 自动生成一批工况、真跑、汇总成表。
 - **桌面界面**（tkinter，零第三方依赖）：设置（接入/提示词/字号折叠）、多会话历史、停止、
@@ -37,11 +42,14 @@ config.py       配置（路径可移植：环境变量 → config.json → 自�
 safety.py       熔断（步数/时长/token/空转/同类循环）+ 目标自适应预算 + 沙箱
 usage.py        token 用量与计费
 envcheck.py     环境自检
-tools/          工具（知识检索 / 写卡 / RELAP5 校验链 / 批量 / 沙箱终端 / 网络 …）
-skills/         技能规范（宪法 / 卡格式 / 物理 / 工作流 / 教学 / 术语 / 批量）
+tools/          工具（知识检索 / 写卡 / RELAP5 校验链 / 自主评估 / 后处理 / 批量 / 沙箱终端 / 网络 …）
+postprocess/    后处理（.o 解析 / 抽时间序列 / 清洗 / 批量趋势 / 出图 / 曲线特征 / 水物性估算）
+plotenv.py      绘图后端探测与自动安装（matplotlib 可选，缺则提示并降级回 Canvas）
+ui/             桌面界面（按职责分 Mixin）
+skills/         技能规范（宪法 / 卡格式 / 物理 / 工作流 / 教学 / 术语 / 批量 / 读图 / 自主评估）
 knowledge/      样例库（human / agent / learned）
 assets/         图标
-docs/           ARCHIVE.md（成果归档）、ROADMAP.md（路线图）
+docs/           ARCHIVE.md（成果归档）、ROADMAP.md（路线图）、TESTING.md（测试者指南）、TEST_PLAN_2.0.md（2.0 验收）
 dev/            开发/测试脚本
 ```
 
@@ -63,7 +71,8 @@ python envcheck.py         # 环境自检
 
 ```bash
 pip install pyinstaller
-build_exe.bat              # 生成 dist/DeckSmith.exe
+build_exe.bat              # 基础版（零依赖）→ dist/DeckSmith.exe
+build_exe.bat mpl          # 带 matplotlib（可导出精细 PNG，体积更大）
 ```
 
 打包后**目标机器无需 Python**。首次运行会在 exe 同目录生成 `config.json` 与 `workspace/`。
@@ -89,6 +98,9 @@ build_exe.bat              # 生成 dist/DeckSmith.exe
 ## 📋 依赖与前提
 
 - **本仓库代码**：纯 Python 标准库，**运行时零第三方依赖**。
+- **绘图增强（可选）**：matplotlib **非必需**——默认用内置零依赖 `Canvas` 出图；想要更精细的 PNG，
+  可在「结果图 / 批量扫描图」窗口点 **「启用 matplotlib」**，程序会**探测→提示→自动 pip 安装**，
+  失败则优雅降级回 Canvas。打包带库版：`build_exe.bat mpl`（默认基础版仍零依赖）。
 - **RELAP5**：需**自行获取并安装**（本仓库**不包含** RELAP5 程序及其物性文件）。
 - **输入卡手册**：需**自备**（本仓库**不包含**手册全文）。
 - **模型**：需自备 API Key 并可联网。

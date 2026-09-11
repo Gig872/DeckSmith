@@ -17,6 +17,26 @@ MODEL_HINTS = {
     "月之暗面 Moonshot": "moonshot-v1-8k", "本地 Ollama": "llama3.1", "自定义": "",
 }
 
+# 变量中文名（仅用于界面显示，变量名本身不变）
+VAR_LABELS = {
+    "pressure": "压力",
+    "voidf": "液相份额",
+    "voidg": "空泡份额",
+    "voidgo": "初始空泡份额",
+    "tempf": "液相温度",
+    "tempg": "气相温度",
+    "mass_flow": "质量流量",
+    "liq_vel": "液相速度",
+    "vap_vel": "气相速度",
+    "area": "流通面积",
+}
+
+
+def var_label(v: str) -> str:
+    """给变量名附上中文：`voidg（空泡份额）`。"""
+    cn = VAR_LABELS.get(v)
+    return f"{v}（{cn}）" if cn else str(v)
+
 # 每个会话开始随机播放一句开场白
 OPENERS = [
     "你好，我是 RELAP5 建模助手。用自然语言说需求即可——我会边问边把模型建出来，并真跑验证、讲清物理。",

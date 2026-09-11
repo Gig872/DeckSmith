@@ -12,11 +12,13 @@ from .sessions import SessionsMixin
 from .chat import ChatMixin
 from .panels import PanelsMixin
 from .thinking import ThinkingMixin
+from .plotwin import PlotWindowMixin
+from .scanwin import ScanWindowMixin
 from .misc import MiscMixin
 
 
-class App(TopbarMixin, SettingsMixin, LayoutMixin, SessionsMixin,
-          ChatMixin, PanelsMixin, ThinkingMixin, MiscMixin, BaseMixin):
+class App(TopbarMixin, SettingsMixin, LayoutMixin, SessionsMixin, ChatMixin,
+          PanelsMixin, ThinkingMixin, PlotWindowMixin, ScanWindowMixin, MiscMixin, BaseMixin):
     """桌面应用：按职责分散到各 Mixin，组合于此。"""
 
 

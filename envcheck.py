@@ -28,8 +28,19 @@ def check() -> list[dict]:
     except Exception as e:  # noqa: BLE001
         add("tkinter（桌面界面）", False, f"不可用：{e}（请装带 tkinter 的 Python）")
 
-    # 3) 第三方依赖
-    add("第三方依赖", True, "无（纯标准库，无需 pip install）")
+    # 3) 第三方依赖（核心零依赖；matplotlib 为**可选**绘图增强）
+    add("第三方依赖（核心）", True, "无（纯标准库，无需 pip install）")
+    try:
+        import plotenv
+        if plotenv.available():
+            add("绘图增强 matplotlib（可选）", True, "已装 —— 可导出精细 PNG")
+        else:
+            ok_i, why = plotenv.can_install()
+            tip = ("可在『结果图』窗口点『启用 matplotlib』自动安装"
+                   if ok_i else "打包版：改用 build_exe.bat mpl 的带库构建")
+            add("绘图增强 matplotlib（可选）", True, f"未装 —— 零依赖 Canvas 出图可用；{tip}")
+    except Exception as e:  # noqa: BLE001
+        add("绘图增强 matplotlib（可选）", True, f"未检测：{e}")
 
     # 4) 配置
     add("config.json", C.CONFIG_FILE.is_file(), str(C.CONFIG_FILE))

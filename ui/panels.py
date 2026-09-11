@@ -74,7 +74,8 @@ class PanelsMixin:
         self.txt_res.delete("1.0", "end")
         if rel:
             try:
-                txt = registry.call("result_summary", {"o_path": rel})
+                txt = registry.call("verify_result", {"o_path": rel})   # 自主评估（独立复核）
+                txt += "\n\n" + registry.call("result_summary", {"o_path": rel})
                 txt += "\n\n" + registry.call("transient_history", {"o_path": rel, "what": "flow"})
                 self.txt_res.insert("1.0", txt)
             except Exception as e:  # noqa: BLE001

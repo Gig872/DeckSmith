@@ -74,7 +74,7 @@ def reset_counts() -> None:
 
 # 已知工具模块（冻结/PyInstaller 环境下 pkgutil 可能枚举不到，用此兜底）
 _KNOWN_TOOLS = ["ask", "basic", "files", "knowledge", "notes", "relap5",
-                "session", "shell", "web", "batch"]
+                "session", "shell", "web", "batch", "postproc", "verify"]
 
 
 def load_plugins(package: str = "tools") -> list[str]:
