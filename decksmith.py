@@ -45,6 +45,10 @@ MODEL_HINTS = {
     "阿里通义(DashScope 兼容)": "qwen-plus", "智谱 GLM": "glm-4",
     "月之暗面 Moonshot": "moonshot-v1-8k", "本地 Ollama": "llama3.1", "自定义": "",
 }
+# 模型下拉候选（可编辑，也能自己输入任意模型名）
+MODEL_PRESETS = ["deepseek-chat", "deepseek-reasoner", "deepseek-v4-flash",
+                 "gpt-4o", "gpt-4o-mini", "qwen-plus", "qwen-max",
+                 "glm-4", "moonshot-v1-8k", "llama3.1"]
 
 # 每个会话开始随机播放一句开场白
 OPENERS = [
@@ -149,7 +153,10 @@ class App:
         ttk.Entry(f, textvariable=self.var_key, width=44, show="*").grid(row=2, column=1, sticky="w", pady=2)
         ttk.Label(f, text="模型").grid(row=3, column=0, sticky="w", pady=2)
         self.var_model = tk.StringVar()
-        ttk.Entry(f, textvariable=self.var_model, width=44).grid(row=3, column=1, sticky="w", pady=2)
+        # 可编辑下拉：既能从候选里选，也能直接输入自定义模型名
+        self.cb_model = ttk.Combobox(f, textvariable=self.var_model,
+                                     values=MODEL_PRESETS, width=42)
+        self.cb_model.grid(row=3, column=1, sticky="w", pady=2)
         ttk.Label(f, text="字号").grid(row=0, column=2, sticky="e", padx=(18, 4))
         sp = ttk.Spinbox(f, from_=8, to=24, width=4, textvariable=self.var_font,
                          command=lambda: self._apply_fonts(self.var_font.get()))
@@ -176,8 +183,14 @@ class App:
         p = self.var_provider.get()
         if PROVIDERS.get(p):
             self.var_base.set(PROVIDERS[p])
-        if not self.var_model.get() and MODEL_HINTS.get(p):
-            self.var_model.set(MODEL_HINTS[p])
+        # 换供应商即换模型（原来只在模型栏为空时才换 → 表现为"无法切换模型"）
+        hint = MODEL_HINTS.get(p)
+        if hint:
+            self.var_model.set(hint)
+            try:
+                self.cb_model.set(hint)
+            except Exception:
+                pass
 
     def _load_cfg_into_ui(self):
         try:
