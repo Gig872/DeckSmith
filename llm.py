@@ -42,10 +42,13 @@ class LLM:
         }
         if tools:
             payload["tools"] = tools
-        # DeepSeek v4 系列：默认思考会吃掉正文，这里显式关思考走正文
+        # DeepSeek v4 系列：默认思考会吃掉正文，故默认关思考走正文；可在设置里开"思考模式"
         if "v4" in self.s.model:
-            payload["thinking"] = {"type": "disabled"}
-            payload["reasoning_effort"] = "low"
+            if getattr(self.s, "thinking", False):
+                payload["thinking"] = {"type": "enabled"}     # 开启思维链
+            else:
+                payload["thinking"] = {"type": "disabled"}
+                payload["reasoning_effort"] = "low"
 
         url = self.s.base_url.rstrip("/") + "/chat/completions"
         data = json.dumps(_sanitize(payload)).encode("utf-8")
@@ -76,3 +79,25 @@ class LLM:
                 "function": {"name": pick, "arguments": "{}"},
             }]}
         return {"content": "[dry-run] 已根据工具结果完成（mock 答复）。"}
+
+
+def list_models(base_url: str, api_key: str, timeout: int = 15) -> list[str]:
+    """向 OpenAI 兼容接口查询可用模型（GET {base_url}/models），返回模型 id 列表。"""
+    url = (base_url or "").rstrip("/") + "/models"
+    req = urllib.request.Request(url, method="GET")
+    req.add_header("Authorization", "Bearer " + (api_key or ""))
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            body = json.loads(resp.read().decode("utf-8", "replace"))
+    except urllib.error.HTTPError as e:
+        raise LLMError(f"HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:200]}")
+    except urllib.error.URLError as e:
+        raise LLMError(f"网络错误: {e.reason}")
+    data = body.get("data") or body.get("models") or []
+    ids = []
+    for it in data:
+        if isinstance(it, dict) and it.get("id"):
+            ids.append(str(it["id"]))
+        elif isinstance(it, str):
+            ids.append(it)
+    return sorted(set(ids))

@@ -31,6 +31,7 @@ class Settings:
     model: str = "deepseek-chat"
     temperature: float = 0.2
     max_tokens: int = 16000    # 单次输出上限：给"读手册+理解+构建"留足空间
+    thinking: bool = False     # 思考模式：开启模型的思维链（更慢更贵；仅对支持的模型生效）
     # 熔断 / 沙箱
     # 注意：以下为**不可逾越的硬顶**。实际每任务的起档由目标复杂度决定
     # （见 safety.Budget），运行中只会在"确有进展"时逐级放宽，绝不越过硬顶。

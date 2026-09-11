@@ -56,9 +56,17 @@ class Agent:
         self.sandbox = Sandbox(self.s.workspace)
         self.system_extra = system_extra
         self.cancel_event = threading.Event()   # 协作式中断（界面"停止"用）
+        self.event_cb = None                    # 可选：每步回调 (kind, data) —— 供界面实时显示思考/工作
 
     def cancel(self) -> None:
         self.cancel_event.set()
+
+    def _ev(self, kind: str, **data) -> None:
+        if self.event_cb:
+            try:
+                self.event_cb(kind, data)
+            except Exception:
+                pass
 
     # ---- 组装 system：框架约定 + skill 文本 ----
     def _system(self) -> str:
@@ -94,6 +102,7 @@ class Agent:
         tot = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
         while True:
             step += 1
+            self._ev("step", step=step)
             if self.cancel_event.is_set():     # 协作式中断：界面"停止"
                 out.stopped = "用户中断"
                 break
@@ -121,6 +130,8 @@ class Agent:
             for k in tot:
                 tot[k] += int(u.get(k) or 0)
             out.usage = dict(tot)
+            self._ev("assistant", content=msg.get("content") or "",
+                     reasoning=msg.get("reasoning_content") or "")
 
             # 回传 assistant（含 tool_calls / reasoning）
             asst = {"role": "assistant", "content": msg.get("content") or ""}
@@ -153,13 +164,16 @@ class Agent:
                     args = json.loads(fn.get("arguments") or "{}")
                 except json.JSONDecodeError:
                     args = {}
+                self._ev("tool", name=name, args=args)
                 result = registry.call(name, args)
                 out.trace.append({"tool": name, "args": args, "result": str(result)[:500]})
                 guard.observe(step, name, str(result))   # 观测进展，供苛刻升级判断
+                self._ev("tool_result", name=name, result=str(result)[:1200])
                 messages.append({"role": "tool", "tool_call_id": tc.get("id", ""),
                                  "content": str(result)})
             if out.stopped:
                 break
+        self._ev("final", say=out.say or "", stopped=out.stopped or "")
         _heal(messages)   # 保证会话历史始终是合法的 tool_calls/tool 配对
         return out
 
