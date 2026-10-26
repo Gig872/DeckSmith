@@ -1,0 +1,3 @@
+time=2026-10-26 20:43:40
+model=kimi-k2.5
+HTTP 429: {"error":{"message":"You exceeded your current quota, please check your plan and billing details. For details, see: https://help.aliyun.com/zh/model-studio/error-code#token-limit","type":"insufficient_quota","param":null,"code":"insufficient_quota"},"request_id":"30e3104d-2227-9fb1-9250-8b61ab003cb2"}

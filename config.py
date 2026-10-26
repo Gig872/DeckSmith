@@ -42,6 +42,9 @@ class Settings:
     max_steps: int = 200         # 工具调用轮次硬顶
     max_seconds: int = 5400      # 单次任务时长硬顶（90 分钟）
     request_timeout: int = 120   # 单次请求超时
+    # 429 限流重试次数（指数退避，封顶 30 s）。Moonshot Tier0 仅 3 RPM，
+    # 单个 agent 任务连续发请求必然触发；不重试会被记成 crashed 污染三项指标。
+    rate_limit_retries: int = 8
     token_budget: int = 24_000_000   # 累计 token 硬顶（大任务需更多；XL 起档 12M，可升到此）
     ctx_chars: int = 600_000     # 上下文字符上限硬顶（按需放宽）
     dry_run: bool = False        # True: 不真调模型，用脚本化 mock 验证循环
@@ -73,6 +76,13 @@ def load() -> Settings:
     s.base_url = os.environ.get("AGENT_BASE_URL", s.base_url)
     s.api_key = os.environ.get("AGENT_API_KEY", s.api_key)
     s.model = os.environ.get("AGENT_MODEL", s.model)
+    # 采样温度：Moonshot 全系只接受 1.0（传 0.2 会 400），跨模型评测须可覆盖
+    _tp = os.environ.get("AGENT_TEMPERATURE", "")
+    if _tp.strip():
+        try:
+            s.temperature = float(_tp)
+        except ValueError:
+            pass
     # 私有请求参数（JSON 串）：跨模型评测时用于关掉各家不同的思考开关
     _eb = os.environ.get("AGENT_EXTRA_BODY", "")
     _to = os.environ.get("AGENT_REQUEST_TIMEOUT", "")

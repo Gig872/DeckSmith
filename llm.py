@@ -4,6 +4,7 @@ dry_run=True 时用脚本化 mock，便于离线验证 agent 循环。"""
 from __future__ import annotations
 
 import json
+import time
 import urllib.error
 import urllib.request
 
@@ -82,19 +83,45 @@ class LLM:
 
         url = self.s.base_url.rstrip("/") + "/chat/completions"
         data = json.dumps(_sanitize(payload)).encode("utf-8")
-        req = urllib.request.Request(url, data=data, method="POST")
-        req.add_header("Content-Type", "application/json")
-        req.add_header("Authorization", "Bearer " + self.s.api_key)
-        try:
-            with urllib.request.urlopen(req, timeout=self.s.request_timeout) as resp:
-                body = json.loads(resp.read().decode("utf-8"))
-        except urllib.error.HTTPError as e:
-            raw = e.read().decode('utf-8', 'replace')
-            if _is_out_of_credit(e.code, raw):
-                raise OutOfCredit(f"HTTP {e.code}: {raw[:400]}")
-            raise LLMError(f"HTTP {e.code}: {raw[:400]}")
-        except urllib.error.URLError as e:
-            raise LLMError(f"网络错误: {e.reason}")
+
+        # 限流重试：Moonshot Tier0 只有 3 RPM，单个 agent 任务会连续快速发请求，
+        # 突发必然触发 429。若不重试，一次 429 会被 harness 记成 crashed=True，
+        # 直接污染 R_exec/R_phys/R_sem——这是实验环境问题，不是能力问题。
+        # 只对 429（限流）重试；402/403 欠费与 400 参数错误仍立即抛出。
+        _max_retry = int(getattr(self.s, "rate_limit_retries", 8) or 8)
+        for _attempt in range(_max_retry + 1):
+            req = urllib.request.Request(url, data=data, method="POST")
+            req.add_header("Content-Type", "application/json")
+            req.add_header("Authorization", "Bearer " + self.s.api_key)
+            try:
+                with urllib.request.urlopen(req, timeout=self.s.request_timeout) as resp:
+                    body = json.loads(resp.read().decode("utf-8"))
+                break
+            except urllib.error.HTTPError as e:
+                raw = e.read().decode('utf-8', 'replace')
+                low = raw.lower()
+                if e.code == 429 and not _is_out_of_credit(e.code, raw):
+                    if _attempt >= _max_retry:
+                        raise LLMError(f"HTTP 429 限流重试 {_max_retry} 次仍失败: {raw[:200]}")
+                    # 优先用响应头里的重置时间，否则指数退避（1,2,4,…封顶 30 s）
+                    _wait = 0.0
+                    try:
+                        _reset = e.headers.get("X-RateLimit-Reset")
+                        if _reset:
+                            _wait = max(0.0, float(_reset))
+                    except Exception:  # noqa: BLE001
+                        _wait = 0.0
+                    if _wait <= 0:
+                        _wait = min(30.0, 2.0 ** _attempt)
+                    _wait += 0.3          # 少量抖动，避免多 worker 同时重试
+                    self.last_retry_wait = _wait
+                    time.sleep(_wait)
+                    continue
+                if _is_out_of_credit(e.code, raw):
+                    raise OutOfCredit(f"HTTP {e.code}: {raw[:400]}")
+                raise LLMError(f"HTTP {e.code}: {raw[:400]}")
+            except urllib.error.URLError as e:
+                raise LLMError(f"网络错误: {e.reason}")
         self.last_usage = body.get("usage") or {}
         ch = body["choices"][0]
         msg = ch.get("message") or {}
