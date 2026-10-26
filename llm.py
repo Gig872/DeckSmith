@@ -22,10 +22,16 @@ class OutOfCredit(LLMError):
     pass
 
 
-# 额度不足的识别特征（DeepSeek 返回 402 + Insufficient Balance；各家措辞略有不同）
+# 额度不足的识别特征（各家措辞不同，逐家实测后补齐）：
+#   DeepSeek / Moonshot：402 + "Insufficient Balance"
+#   DashScope（阿里，Qwen/Kimi 走兼容模式）：403 + "Free quota exhausted ... add funds"
+#     ⚠ 这两句不含 "insufficient"/"exceeded your current quota"，漏判会被当成普通异常
+#       记为 crashed=True，直接把 R_exec/R_phys/R_sem 打脏——跨模型评测必须先覆盖。
 _CREDIT_HINTS = ("insufficient balance", "insufficient_quota", "exceeded your current quota",
                  "you exceeded your current quota", "余额不足", "欠费", "billing",
-                 "account balance", "credit")
+                 "account balance", "credit",
+                 "quota exhausted", "free quota", "add funds",
+                 "arrearage", "recharge")
 
 
 def _is_out_of_credit(code: int, raw: str) -> bool:

@@ -25,6 +25,8 @@ def main():
     ap.add_argument("--repeats", type=int, default=1)
     ap.add_argument("--knowledge", choices=["on", "off", "off-strict"], default="off")
     ap.add_argument("--tag", default="")
+    ap.add_argument("--resume", action="store_true",
+                    help="断点续跑：跳过本 worker 输出文件里已完成的 (题目, 轮次)")
     ap.add_argument("--tasks", default="",
                     help="题库文件（默认 tasks.jsonl）。**必须与 runner 用同一份**，"
                          "否则索引会错位到别的题上——语域探针就踩过这个坑。")
@@ -65,11 +67,24 @@ def main():
             pass
 
     idxs = [int(x) for x in a.indices.split(",") if x.strip()]
+    # 断点续跑：读本 worker 自己的输出文件，跳过已完成的 (题目, 轮次)。
+    # 欠费中断或进程被杀后，用同一组参数重启即可接着跑，不会重复计费。
+    done = set()
+    if a.resume and os.path.isfile(a.out):
+        for line in open(a.out, encoding="utf-8"):
+            try:
+                r = json.loads(line)
+                done.add((r["task_id"], int(r.get("repeat") or 1)))
+            except Exception:  # noqa: BLE001
+                pass                      # 被杀时末行可能截断
+        print(f"续跑：已完成 {len(done)} 条，跳过", flush=True)
     fout = open(a.out, "a", encoding="utf-8")
     t0 = time.time()
     for rep in range(1, a.repeats + 1):
         for i in idxs:
             t = tasks[i]
+            if (t["task_id"], rep) in done:
+                continue
             try:
                 rec = evaluate(s, t, exp.get(t["task_id"]), rep)
             except OutOfCredit as e:

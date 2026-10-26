@@ -78,6 +78,28 @@ def done_ids() -> set:
     return ids
 
 
+def done_ids_this_arm(tag: str, repeats: int) -> set:
+    """**仅本臂**已完成的 (task_id, repeat)，用于欠费中断后续跑。
+
+    为什么不能用 done_ids()：它扫全部 run_results*.jsonl，跨臂共用题集时会让
+    Q 臂跳过 D 臂做过的题。续跑必须按 (标签, 重复轮次) 精确去重。
+    """
+    import glob
+    key = set()
+    pats = [os.path.join(HERE, f"run_results_k{KNOWLEDGE}{tag}.jsonl")]
+    pats += glob.glob(os.path.join(HERE, f"run_results_k{KNOWLEDGE}{tag}_w*.jsonl"))
+    for p in pats:
+        if not os.path.isfile(p):
+            continue
+        for line in open(p, encoding="utf-8"):
+            try:
+                r = json.loads(line)
+                key.add((r["task_id"], int(r.get("repeat") or 1)))
+            except Exception:  # noqa: BLE001
+                pass          # 进程被杀时最后一行可能截断，忽略即可
+    return key
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--start", type=int, default=0)
@@ -86,6 +108,9 @@ def main():
     ap.add_argument("--families", default="", help="逗号分隔，仅跑这些族")
     ap.add_argument("--workers", type=int, default=1, help="并发进程数（>1 时每题独立工作目录）")
     ap.add_argument("--skip-done", action="store_true", help="跳过已有结果的题")
+    ap.add_argument("--resume", action="store_true",
+                    help="断点续跑：只跳过**本臂**输出文件里已完成的 (题目, 轮次)。"
+                         "欠费中断后用同参数加本开关即可接着跑，且不会跨臂误跳。")
     ap.add_argument("--knowledge", choices=["on", "off", "off-strict"], default="off",
                     help="评测条件：on=带样例库，off=无库（历史口径），"
                          "off-strict=严格空库（每题清空、存与取同一目录）")
@@ -144,13 +169,15 @@ def main():
             out = os.path.join(HERE, f"run_results_k{KNOWLEDGE}{a.tag}_w{w}.jsonl")
             log = open(os.path.join(HERE, f"_worker_k{KNOWLEDGE}{a.tag}_w{w}.log"),
                        "w", encoding="utf-8")
-            p = subprocess.Popen(
-                [sys.executable, os.path.join(HERE, "_worker.py"),
-                 "--indices", ",".join(str(x) for x in idxs),
-                 "--workspace", f"workspace_k{KNOWLEDGE}{a.tag}_w{w}", "--out", out,
-                 "--repeats", str(a.repeats), "--knowledge", a.knowledge,
-                 "--tag", a.tag, "--tasks", a.tasks or ""],
-                cwd=ROOT_OUTER, stdout=log, stderr=subprocess.STDOUT)
+            _cmd = [sys.executable, os.path.join(HERE, "_worker.py"),
+                    "--indices", ",".join(str(x) for x in idxs),
+                    "--workspace", f"workspace_k{KNOWLEDGE}{a.tag}_w{w}", "--out", out,
+                    "--repeats", str(a.repeats), "--knowledge", a.knowledge,
+                    "--tag", a.tag, "--tasks", a.tasks or ""]
+            if a.resume:
+                _cmd.append("--resume")       # 各 worker 读自己的输出文件续跑
+            p = subprocess.Popen(_cmd, cwd=ROOT_OUTER,
+                                 stdout=log, stderr=subprocess.STDOUT)
             procs.append((w, len(idxs), p, log))
             print(f"  worker {w}: {len(idxs)} 道 (pid {p.pid})", flush=True)
         for w, n, p, log in procs:
@@ -170,21 +197,30 @@ def main():
     s = load()
     prepare(s.workspace)
     exp = load_expected()
-    sel2 = [i for i in sel if tasks[i]["task_id"] not in seen]
-    print(f"串行执行 {len(sel2)} 道；模型 {s.model or '(未配置)'}", flush=True)
 
     out_path = os.path.join(HERE, f"run_results_k{KNOWLEDGE}{a.tag}.jsonl")
-    clear_mark(HERE)                    # 清掉上次的欠费标记
+    # 续跑：只认本臂输出文件里的 (task_id, repeat)，跨臂不互相影响
+    done = done_ids_this_arm(a.tag, a.repeats) if a.resume else set()
+    sel2 = [i for i in sel if tasks[i]["task_id"] not in seen]
+    if done:
+        print(f"续跑：本臂已完成 {len(done)} 条，跳过", flush=True)
+    print(f"串行执行 {len(sel2)} 道；模型 {s.model or '(未配置)'}", flush=True)
+
+    if not a.resume:
+        clear_mark(HERE)                # 清掉上次的欠费标记（续跑时保留，便于追溯）
     fout = open(out_path, "a", encoding="utf-8")
     t0 = time.time()
     for rep in range(1, a.repeats + 1):
         for i in sel2:
             t = tasks[i]
+            if (t["task_id"], rep) in done:
+                continue
             try:
                 rec = one(s, t, exp.get(t["task_id"]), {"repeat": rep})
             except OutOfCredit as e:
                 mark_out_of_credit(HERE, s.model, str(e))
                 print(f"⚠ 欠费截断：已在第 {i} 题停止（未完成部分不记为失败）", flush=True)
+                print(f"  续跑命令：同参数追加 --resume", flush=True)
                 fout.close()
                 return
             fout.write(json.dumps(rec, ensure_ascii=False) + "\n")
