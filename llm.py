@@ -63,6 +63,9 @@ class LLM:
         }
         if tools:
             payload["tools"] = tools
+        # 各家接口的私有参数（如 Qwen3 的 enable_thinking）：由配置原样并入
+        if getattr(self.s, "extra_body", None):
+            payload.update(self.s.extra_body)
         # DeepSeek v4 系列：默认思考会吃掉正文，故默认关思考走正文；可在设置里开"思考模式"
         if "v4" in self.s.model:
             if getattr(self.s, "thinking", False):

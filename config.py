@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 import sys
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, field, asdict
 from pathlib import Path
 
 # 打包(PyInstaller)兼容：
@@ -32,6 +32,9 @@ class Settings:
     temperature: float = 0.2
     max_tokens: int = 16000    # 单次输出上限：给"读手册+理解+构建"留足空间
     thinking: bool = False     # 思考模式：开启模型的思维链（更慢更贵；仅对支持的模型生效）
+    # 各家接口的私有参数（原样并入请求体）。用于跨模型评测：不同供应商的开关名不同，
+    # 例如 Qwen3 的 {"enable_thinking": false}。留空即不发。
+    extra_body: dict = field(default_factory=dict)
     # 熔断 / 沙箱
     # 注意：以下为**不可逾越的硬顶**。实际每任务的起档由目标复杂度决定
     # （见 safety.Budget），运行中只会在"确有进展"时逐级放宽，绝不越过硬顶。
@@ -70,6 +73,16 @@ def load() -> Settings:
     s.base_url = os.environ.get("AGENT_BASE_URL", s.base_url)
     s.api_key = os.environ.get("AGENT_API_KEY", s.api_key)
     s.model = os.environ.get("AGENT_MODEL", s.model)
+    # 私有请求参数（JSON 串）：跨模型评测时用于关掉各家不同的思考开关
+    _eb = os.environ.get("AGENT_EXTRA_BODY", "")
+    _to = os.environ.get("AGENT_REQUEST_TIMEOUT", "")
+    if _to.strip().isdigit():
+        s.request_timeout = int(_to)
+    if _eb:
+        try:
+            s.extra_body = json.loads(_eb)
+        except Exception:
+            s.extra_body = {}
     s.relap5_dir = os.environ.get("RELAP5_DIR", s.relap5_dir)
     s.doc_path = os.environ.get("RELAP5_DOC", s.doc_path)
     # 并发评测：每个 worker 用独立工作目录（避免 RELAP5 输出文件名撞车）
