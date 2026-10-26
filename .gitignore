@@ -52,3 +52,10 @@ bench/run_results*.jsonl
 bench/ref_results*.jsonl
 bench/*.log
 workspace_benchpilot*/
+
+# ===== 跨模型实验的密钥（绝不提交）=====
+key/
+
+# 冒烟测试产物
+bench/decks_koff_smoke*/
+bench/decks_kon_smoke*/
