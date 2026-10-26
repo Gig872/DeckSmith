@@ -16,7 +16,7 @@ from pathlib import Path
 import registry
 import sessionctx
 from config import Settings, load, ensure_dirs
-from llm import LLM, LLMError
+from llm import LLM, LLMError, OutOfCredit
 from safety import Breaker, Guard, Sandbox, classify_goal
 
 _RANK = {"S": 0, "M": 1, "L": 2, "XL": 3}
@@ -122,6 +122,8 @@ class Agent:
                 break
             try:
                 msg = self.llm.complete(messages, tools=tools or None)
+            except OutOfCredit:
+                raise                     # 欠费必须外传：截断整批，且不得记为"任务失败"
             except LLMError as e:
                 out.stopped = f"LLM 调用失败: {e}"
                 break

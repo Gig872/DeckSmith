@@ -4,12 +4,28 @@ dist/config.json
 
 # ===== 运行产物 / 工作区 =====
 workspace/
+# 所有评测/试点工作区（w*/kon/koff/Bfix/strict/benchpilot/card 等，
+# 含 .o 输出，动辄上百 MB；只保留在本地供复查）
+workspace_*/
+ws_*/
 dist/
 build/
+# 论文版冻结包（build_paper.bat 的产物；二进制，不入库）
+dist_paper/
+build_paper/
+DeckSmith-v*-paper-*.zip
+dist_release/
 *.spec
 *.log
+*.bak*
 *_out.txt
 dev/*_out.txt
+
+# ===== 评测台（bench）：只提交代码与题集/结果，其余产物忽略 =====
+# 第一轮归档（实验数据，可随时重跑）
+bench/r1/
+# 跑分期间 agent 自动沉淀的卡（派生数据）
+bench/saved_decks/
 
 # ===== Python 缓存 =====
 __pycache__/
@@ -24,3 +40,15 @@ assets/icon_src.jpg
 
 # ===== Windows 快捷方式（含本机路径，不提交）=====
 *.lnk
+
+# ===== 论文实验（2026-10-26 冻结版）=====
+# 轨迹动辄数百 MB，只留本地；入库的是代码 + 题集 + 参考解
+bench/traces/
+bench/saved_decks/
+bench/archive/
+bench/eval_lib/_quarantine_empty_20260914/
+# 运行产物
+bench/run_results*.jsonl
+bench/ref_results*.jsonl
+bench/*.log
+workspace_benchpilot*/

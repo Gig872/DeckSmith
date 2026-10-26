@@ -38,6 +38,14 @@
       "sha256": "497e597c3e88a3f6091a335c4de2cec2131828078be4ee63369588b283cd8e38"
     },
     {
+      "name": "edwards_obrien_blowdown.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "ba8ee47860329be631d755be42b891f4bed9e1f54004cce2b75c93f9e81092a4",
+      "source": "B-T-3271 (Edwards & OBrien 1970)",
+      "note": "真实实验简化复现；已真跑验证"
+    },
+    {
       "name": "horiz_pipe_area0.05_L1m_4vol.i",
       "type": "example",
       "verified": true,
@@ -60,6 +68,14 @@
       "type": "example",
       "verified": true,
       "sha256": "19228c608e2186efe68e47be43149cf8190055ebeec769997bf1a82e8c4871e5"
+    },
+    {
+      "name": "marviken_critical_flow.i",
+      "type": "example",
+      "verified": true,
+      "sha256": "56f31f101c5c5c0cf3f80e292eae5ba23863a35a6bf12d14e90ff5582e6fbe88",
+      "source": "NUREG/IA-0007",
+      "note": "真实实验简化复现；已真跑验证"
     },
     {
       "name": "parallel_two_channel_split_merge.i",

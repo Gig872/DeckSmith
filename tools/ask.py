@@ -17,10 +17,13 @@ def set_asker(fn) -> None:
 
 
 def _default_asker(question: str) -> str:
-    try:
-        return input(f"\n[agent 提问] {question}\n> ").strip()
-    except (EOFError, KeyboardInterrupt):
-        return ""
+    """**未注入前端的场合一律不阻塞**。
+
+    批量评测/无人值守时 `input()` 会挂在没有 stdin 的子进程上（实测把整题卡死）。
+    命令行交互由 `ui/base.py` 注入 asker，仍可正常问答；这里只兜底给一句
+    明确的"无人应答"，并提示按合理假设继续、在交付说明里注明。
+    """
+    return "（评测/无人值守环境：无人应答。请按报告已给的物理条件作合理假设继续，并逐条注明假设。）"
 
 
 @tool("ask_user",

@@ -1,0 +1,76 @@
+{
+  "_note": "真实实验案例（来自 refs/ 的公开报告）。verified=false 表示数值尚需人工核对原文；核对后方可用于正式实验。",
+  "cases": [
+    {
+      "id": "marviken_jit11",
+      "kind": "critical_flow_nozzle",
+      "source": "NUREG/IA-0007, Table 2-1 (Marviken JIT-11)",
+      "verified": false,
+      "params": {
+        "vessel_volume_m3": 420.0,
+        "vessel_D_m": 5.22,
+        "standpipe_h_m": 18.0,
+        "standpipe_OD_m": 1.04,
+        "standpipe_wall_mm": 8.8,
+        "nozzle_D_m": 0.299,
+        "nozzle_area_m2": 0.0702,
+        "nozzle_L_m": 1.18,
+        "p0_Pa": 5000000.0,
+        "p_final_Pa": 1880000.0,
+        "level0_m": 10.2,
+        "level_final_m": 8.0,
+        "water0_kg": 145000.0,
+        "steam0_kg": 5000.0,
+        "max_subcooling_K": 3.0
+      },
+      "key_outputs": [
+        {"var": "mass_flow", "agg": "peak", "tol": 0.10, "mode": "rel"}
+      ]
+    },
+    {
+      "id": "marviken_cft21",
+      "kind": "critical_flow_nozzle",
+      "source": "NUREG/IA-0007, Table 2-1 (Marviken CFT-21)",
+      "verified": false,
+      "params": {
+        "vessel_volume_m3": 420.0,
+        "vessel_D_m": 5.22,
+        "nozzle_D_m": 0.500,
+        "nozzle_area_m2": 0.1963,
+        "nozzle_L_m": 1.5,
+        "p0_Pa": 4900000.0,
+        "p_final_Pa": 2500000.0,
+        "level0_m": 19.9,
+        "level_final_m": 0.8,
+        "water0_kg": 330000.0,
+        "steam0_kg": 600.0,
+        "max_subcooling_K": 33.0
+      },
+      "key_outputs": [
+        {"var": "mass_flow", "agg": "peak", "tol": 0.10, "mode": "rel"}
+      ]
+    },
+    {
+      "id": "edwards_obrien_sp1",
+      "kind": "pipe_blowdown",
+      "source": "B-T-3271 (1999 RELAP5 Users Seminar), Standard Problem 1; Edwards & O'Brien 1970",
+      "verified": false,
+      "params": {
+        "pipe_L_m": 4.096,
+        "pipe_D_m": 0.073,
+        "n_vol": 20,
+        "p0_Pa": 7000000.0,
+        "T0_exp_K": 513.7,
+        "T0_install_K": 502.2,
+        "T_range_exp_K": [498.0, 507.0],
+        "break_area_ratio": 0.87,
+        "open_time_s": 0.001,
+        "duration_s": 0.6
+      },
+      "key_outputs": [
+        {"var": "pressure", "agg": "min", "tol": 0.15, "mode": "rel"},
+        {"var": "voidg", "agg": "max", "tol": 0.10, "mode": "abs"}
+      ]
+    }
+  ]
+}

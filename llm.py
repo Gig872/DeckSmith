@@ -14,6 +14,27 @@ class LLMError(RuntimeError):
     pass
 
 
+class OutOfCredit(LLMError):
+    """API 额度／余额不足。
+
+    必须与普通错误区别对待：**立即截断整批运行**，且不得把受影响的任务
+    记为失败（那是实验环境问题，不是被测系统的能力问题）。"""
+    pass
+
+
+# 额度不足的识别特征（DeepSeek 返回 402 + Insufficient Balance；各家措辞略有不同）
+_CREDIT_HINTS = ("insufficient balance", "insufficient_quota", "exceeded your current quota",
+                 "you exceeded your current quota", "余额不足", "欠费", "billing",
+                 "account balance", "credit")
+
+
+def _is_out_of_credit(code: int, raw: str) -> bool:
+    if code == 402:                      # Payment Required：明确欠费
+        return True
+    low = (raw or "").lower()            # 429 等：只有措辞命中"余额/额度"才算
+    return any(h in low for h in _CREDIT_HINTS)
+
+
 def _sanitize(o):
     if isinstance(o, dict):
         return {k: _sanitize(v) for k, v in o.items()}
@@ -59,13 +80,24 @@ class LLM:
             with urllib.request.urlopen(req, timeout=self.s.request_timeout) as resp:
                 body = json.loads(resp.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
-            raise LLMError(f"HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:400]}")
+            raw = e.read().decode('utf-8', 'replace')
+            if _is_out_of_credit(e.code, raw):
+                raise OutOfCredit(f"HTTP {e.code}: {raw[:400]}")
+            raise LLMError(f"HTTP {e.code}: {raw[:400]}")
         except urllib.error.URLError as e:
             raise LLMError(f"网络错误: {e.reason}")
         self.last_usage = body.get("usage") or {}
-        msg = body["choices"][0].get("message") or {}
+        ch = body["choices"][0]
+        msg = ch.get("message") or {}
         if not (msg.get("content") or msg.get("tool_calls")):
             raise LLMError("空回复（可能被思考占满或过滤）")
+        # **截断保护**：finish_reason=length 表示被 max_tokens 截断。
+        # 若此时**没有 tool_calls**，核心循环（core._loop 的 `if not calls: break`）会把它
+        # 当成"最终答复"而**静默收尾**（实测：台架 FIX-II 试点 a1 输出了 5.7 万字符的退化
+        # 重复文本、零工具调用，却被记为正常结束）。故显式报错，绝不当作成功。
+        if ch.get("finish_reason") == "length" and not msg.get("tool_calls"):
+            raise LLMError("输出被 max_tokens 截断（finish_reason=length）且无工具调用；"
+                           "不得视为最终答复——请缩短单次输出或改用分块/生成器式构建")
         return msg
 
     # ---- dry_run mock：先调一次工具（避开 ask_user 以免阻塞），再给最终答复 ----

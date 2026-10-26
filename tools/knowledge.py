@@ -92,6 +92,21 @@ def _libs(lib: str) -> list[tuple[str, Path]]:
     return [(t, _tier_dir(t)) for t in _TIERS]   # both/其他：全部
 
 
+def _write_dir(tier: str) -> Path:
+    """写入目录。评测隔离时 agent 档重定向到题目私有目录（AGENT_SAVE_AGENT_DIR），
+    避免智能体的运行期自存卡污染评测用参考库。
+
+    只重定向**写**：find_example 仍读真实参考库，故「带库」条件的检索行为不变。
+    """
+    if tier == "agent":
+        ov = os.environ.get("AGENT_SAVE_AGENT_DIR")
+        if ov:
+            p = Path(ov)
+            p.mkdir(parents=True, exist_ok=True)
+            return p
+    return _tier_dir(tier)
+
+
 def _writable_tier(lib: str) -> str | None:
     """可写档：learned（默认）或 agent（可信基座，需已核验）；human 不可写。
     兼容旧名 reference → 写入 agent 档。"""
@@ -284,7 +299,7 @@ def save_example(name: str, text: str, lib: str = "learned") -> str:
     if tier is None:
         return ("[拒绝] human 是**人工基座**（最高权重），只读，不得写入。"
                 "自己的成果请存 learned（默认），已核验的可跑样例可存 agent。")
-    p = _tier_dir(tier) / f"{name}.i"
+    p = _write_dir(tier) / f"{name}.i"
     if tier == "agent" and p.exists():
         return ("[拒绝] agent 可信基座为**冻结归档**，同名文件不可覆盖（避免改坏已核验样例）。"
                 "请换名，或先存 learned。")

@@ -72,6 +72,11 @@ def load() -> Settings:
     s.model = os.environ.get("AGENT_MODEL", s.model)
     s.relap5_dir = os.environ.get("RELAP5_DIR", s.relap5_dir)
     s.doc_path = os.environ.get("RELAP5_DOC", s.doc_path)
+    # 并发评测：每个 worker 用独立工作目录（避免 RELAP5 输出文件名撞车）
+    s.workspace = os.environ.get("AGENT_WORKSPACE", s.workspace)
+    # 评测隔离：知识库可整体重定向，用于物理隔离泄题卡（不删除、不改内容）
+    s.reference_dir = os.environ.get("AGENT_REFERENCE_DIR", s.reference_dir)
+    s.learned_dir = os.environ.get("AGENT_LEARNED_DIR", s.learned_dir)
     # 若未显式给出/给的不存在，自动探测
     if not s.relap5_dir or not (Path(s.relap5_dir) / "relap5.exe").is_file():
         s.relap5_dir = detect_relap5() or s.relap5_dir

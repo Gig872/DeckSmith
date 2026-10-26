@@ -133,21 +133,70 @@ class Guard:
         if self.tokens > cur["tokens"]:
             raise Breaker(f"token 超过预算 {cur['tokens']}")
 
+    # 无进展检测只对**幂等只读/检索**工具生效：`run_relap5`/`write_file` 等即使参数
+    # 完全相同，也可能因为底层文件已被改过而具有意义，不能据此判空转。
+    # 含**纯函数**工具（`calc` 同参数必得同结果）与幂等记账（`remember_requirement`）：
+    # 它们参数完全相同地重复，就是真正的"无进展"。
+    # （实测：模型曾对 `calc("192.4/0.0340…")` 连调 182 次、参数完全一致，
+    #   烧掉 12.1M token——因为 `calc` 当时既免 streak 又不在本集合里。）
+    _NOPROG_TOOLS = {"lookup_doc", "find_example", "read_example", "list_examples",
+                     "read_file", "list_files", "glossary", "web_search", "web_fetch",
+                     "doc_search", "calc", "remember_requirement"}
+
     def note_calls(self, calls: list[dict]) -> None:
-        """无进展检测：连续两轮完全相同的工具调用 → 熔断。"""
-        sig = hashlib.md5(json.dumps(calls, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+        """无进展检测：**连续两轮完全相同的只读/检索调用** → 熔断。
+
+        历史坑：旧实现对**全部**调用取签名，且签名里含每轮都不同的 `tool_call.id`，
+        导致完全相同的查询被判成"不同调用"，熔断**永不触发**——实测 `lookup_doc`
+        同一查询连续重复 137 次仍未停，直到烧完 token 预算。
+        现改为：只对幂等只读工具生效，且**按 (name, arguments) 归一化后**比签名。
+        """
+        names = [((c.get("function") or {}) if isinstance(c, dict) else {}).get("name")
+                 for c in (calls or [])]
+        if not names or any(n not in self._NOPROG_TOOLS for n in names):
+            self._same = 0
+            self._last_sig = None
+            return
+        canon = sorted(((c.get("function") or {}).get("name"),
+                        (c.get("function") or {}).get("arguments")) for c in calls)
+        sig = hashlib.md5(json.dumps(canon, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
         self._same = self._same + 1 if sig == self._last_sig else 0
         self._last_sig = sig
         self._healthy = self._healthy and self._same < 1
-        if self._same >= 2:
-            raise Breaker("无进展：连续相同的工具调用，疑似死循环")
+        # `_same` 在"本轮与上轮完全相同"时 +1（首轮为 0）→ `>= 1` 即**连续两轮相同**。
+        if self._same >= 1:
+            raise Breaker("无进展：连续两轮相同的只读/检索/纯函数调用，疑似死循环")
+
+    # 只读信息工具：自有主题级限流（lookup_doc/find_example 各自上限 3 次/主题），
+    # 建卡时天然需要连续多次查阅，不应再计入"同类空转"，否则会误杀正常建卡流程。
+    _INFO_TOOLS = {"lookup_doc", "find_example", "read_example", "list_examples",
+                   "list_files", "read_file", "doc_search"}
+    # **幂等批处理工具**：一轮内连续多次调用是**正常模式**（批量登记需求、批量算几何、
+    # 批量取曲线特征），不是空转。实测两次台架试点的首次尝试都因它们被误杀
+    # （`calc` 连算面积/体积、`remember_requirement` 连登记需求）→ 与信息工具同等豁免。
+    _BATCH_TOOLS = {"calc", "remember_requirement", "list_requirements",
+                    "plot_series", "scan_series", "curve_features", "glossary"}
+    # 少数工具"连续多次调用"是正常模式，但完全豁免又可能放过真空转 →
+    # 给它们**更宽松的上限**而非无限（实测：FIX-II 试点 a2 死在 `python_exec` 连调 7 次，
+    # 模型当时只是在数自己卡的行号）。
+    # 明确硬上限的工具：**即使它在信息/批处理白名单里也照样计数**（先查这里）。
+    # 实测 lookup_doc 会连续重复同一查询 137 次而不停（主题限流只提示、不阻断）。
+    _TOOL_CAPS = {"python_exec": 12, "run_command": 12,
+                  "lookup_doc": 10, "find_example": 10, "read_example": 10}
 
     def note_tool(self, name: str) -> None:
-        """同一工具连续调用过多（即使参数不同）→ 熔断，防"反复查/反复试"空转。"""
+        """同一工具连续调用过多（即使参数不同）→ 熔断，防"反复查/反复试"空转。
+        只读信息工具除外（见 _INFO_TOOLS）。"""
+        hard = self._TOOL_CAPS.get(name)
+        if hard is None and (name in self._INFO_TOOLS or name in self._BATCH_TOOLS):
+            self._last_tool = name
+            self._tool_streak = 0
+            return
         self._tool_streak = self._tool_streak + 1 if name == self._last_tool else 0
         self._last_tool = name
         self._healthy = self._healthy and self._tool_streak < 2
-        if self._tool_streak >= self.tool_streak_cap:
+        _cap = hard if hard is not None else self.tool_streak_cap
+        if self._tool_streak >= _cap:
             raise Breaker(f"同一工具 {name} 连续调用 {self._tool_streak + 1} 次，疑似空转——请改变策略")
 
     # ---- 进展观测：喂给预算 ----

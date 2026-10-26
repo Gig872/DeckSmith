@@ -1,0 +1,242 @@
+[
+  {
+    "tier": "learned",
+    "name": "boiling_channel_quality_distribution.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "branch_min_splitter.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "chf_dryout_onset_1p12MW.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "chf_dryout_power_scan_template.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "choked_flow_backpressure_scan_template.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "choked_flow_two_phase_critical.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "edwards_obrien_blowdown.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "horiz_pipe_area0.05_L1m_4vol.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "horiz_pipe_flow_in_press_out.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "loca_sbloca_blowdown.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "lof_transient_pump_coastdown.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "marviken_critical_flow.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "parallel_two_channel_split_merge.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "pipe_flow_scan_heated_100kW_1MPa.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "pipe_flow_scan_heated_200kW.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "pwr_two_loop_coupled_sg.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "sbloca_pumptrip_lof_loca_combined.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "single_channel_heating_100kW.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "learned",
+    "name": "snglvol_min_deadend.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\learned"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_large_loop_transient.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_medium_parallel_two_channel.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_medium_pipe_heatstructure.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_medium_pump_loop.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_medium_series_pipe.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_medium_valve_trip_transient.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_annulus_vertical.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_branch_splitter.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_eccmix.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_jetmixer.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_pipe_4vol.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_separatr.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_sngljun.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_snglvol_deadend.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_tmdpvol_tmdpjun.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_valve_check.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_valve_inrvlv.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_valve_rlfvlv.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_valve_srvvlv.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_small_valve_trpvlv.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_x_accum.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_x_hs_gap.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_x_mtpljun.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_x_point_kinetics.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_x_pump_curves.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_agent",
+    "name": "ref_x_turbine.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\agent"
+  },
+  {
+    "tier": "reference_human",
+    "name": "series_pipe.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\human"
+  },
+  {
+    "tier": "reference_human",
+    "name": "simple_pipe.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\human"
+  },
+  {
+    "tier": "reference_human",
+    "name": "vert_pipe.i",
+    "src": "C:\\relap-5\\agent-kit\\knowledge\\reference\\human"
+  }
+]
