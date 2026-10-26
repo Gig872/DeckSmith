@@ -12,6 +12,15 @@ import os
 import sys
 import time
 
+# 控制台/重定向的编码兜底：Windows 默认 GBK，日志里的 ⚠ 等符号会抛
+# UnicodeEncodeError，且恰好发生在"欠费截断"这类错误分支上，会把真正的
+# 原因盖成编码错误。统一按 UTF-8 输出，无法编码的字符替成 ?。
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:  # noqa: BLE001
+    pass
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
