@@ -127,6 +127,17 @@ build_exe.bat mpl          # 带 matplotlib（可导出精细 PNG，体积更大
 
 ---
 
+## 📦 仓库包含什么
+
+本仓库是论文 *Failure analysis and layered verification of LLM-generated RELAP5 input decks* 所用的评测代码基线。
+
+- **包含**：主程序（`core.py`、`llm.py`、`tools/`、`postprocess/`）；`bench/` 的族定义、题库 `tasks.jsonl`、参考解与评测脚本；`bench/decks_*` 下各实验臂生成或使用的 RELAP5 输入卡，其中既有通过样本，也有失败与不完整样本。
+- **不包含**：逐题运行结果（`bench/run_results*.jsonl`）、工具调用轨迹（`bench/traces/`）、工作区与 `.o` 输出、密钥与 `config.json`。这些由 `.gitignore` 排除，只保留在作者本地。
+- **复现说明**：论文中的数字不能由当前代码直接复现——知识库写入路径、熔断语义与模型服务端均已变化，详见 `bench/README.md` 第七节。仓库标识的是实验时使用的代码 revision，不是能重跑出同一组数字的环境快照。
+- **路径说明**：部分分析脚本（如 `bench/_final.py`、`_mklist.py`）保留了作者机器上的绝对路径（`C:\relap-5\...`），换目录运行前需自行修改。
+
+---
+
 ## 📄 许可证
 
 MIT（见 `LICENSE`）。使用本工具产生的模型与结果由使用者自行负责验证。
